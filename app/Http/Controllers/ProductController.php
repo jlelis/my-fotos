@@ -16,7 +16,8 @@ class ProductController extends Controller
     public function index()
     {
         $productPhotos = ProductPhoto::with('product')->get();
-        return view('welcome', compact('productPhotos'));
+        $products = Product::with('productPhotos')->get();
+        return view('welcome', compact('productPhotos','products'));
     }
 
     /**
@@ -43,7 +44,7 @@ class ProductController extends Controller
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $file) {
                 // $name=$file->getClientOriginalName();
-                $filename = $file->store('photos');
+                $filename = $file->store('photos','public');
                 // $file->move('storage/photos',$name);
                 // $filename=time().'_'.$name;
                 // dd($filename);

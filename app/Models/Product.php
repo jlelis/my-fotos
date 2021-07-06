@@ -11,7 +11,7 @@ class Product extends Model
 
     protected $fillable = ['name'];
 
-    public function productsPhotos()
+    public function productPhotos()
     {
         return $this->hasMany(ProductPhoto::class);
 
