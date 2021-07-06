@@ -15,7 +15,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('welcome');
+        $productPhotos = ProductPhoto::with('product')->get();
+        return view('welcome', compact('productPhotos'));
     }
 
     /**
@@ -31,7 +32,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -39,45 +40,26 @@ class ProductController extends Controller
 
         $product = Product::create($request->all());
 
-        if ($request->hasFile('photos'))
-        {
-            foreach($request->file('photos') as $file){
-                    // $name=$file->getClientOriginalName();
-                    $filename = $file->store('photos');
-                    // $file->move('storage/photos',$name);
-                    // $filename=time().'_'.$name;
-                    // dd($filename);
-                    ProductPhoto::create([
-                        'product_id'=>$product->id,
-                        'path_images'=>$filename,
-                    ]);
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $file) {
+                // $name=$file->getClientOriginalName();
+                $filename = $file->store('photos');
+                // $file->move('storage/photos',$name);
+                // $filename=time().'_'.$name;
+                // dd($filename);
+                ProductPhoto::create([
+                    'product_id' => $product->id,
+                    'path_images' => $filename,
+                ]);
             }
         }
-        return redirect()->back()->with('message','salvo com sucesso!');
+        return redirect()->back()->with('message', 'salvo com sucesso!');
     }
-
-    private function imageUpload($images, $imageColumn = null)
-	{
-
-		$uploadedImages = [];
-
-		if(is_array($images)) {
-
-			foreach($images as $image) {
-					$uploadedImages[] = [$imageColumn => $image->store('products', 'public')];
-			}
-
-		} else {
-			$uploadedImages = $images->store('logo', 'public');
-		}
-
-		return $uploadedImages;
-	}
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Product  $product
+     * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function show(Product $product)
@@ -88,7 +70,7 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Product  $product
+     * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function edit(Product $product)
@@ -99,8 +81,8 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Product $product)
@@ -111,11 +93,29 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Product  $product
+     * @param \App\Models\Product $product
      * @return \Illuminate\Http\Response
      */
     public function destroy(Product $product)
     {
         //
+    }
+
+    private function imageUpload($images, $imageColumn = null)
+    {
+
+        $uploadedImages = [];
+
+        if (is_array($images)) {
+
+            foreach ($images as $image) {
+                $uploadedImages[] = [$imageColumn => $image->store('products', 'public')];
+            }
+
+        } else {
+            $uploadedImages = $images->store('logo', 'public');
+        }
+
+        return $uploadedImages;
     }
 }
