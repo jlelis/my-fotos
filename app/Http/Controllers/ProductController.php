@@ -15,9 +15,13 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $productPhotos = ProductPhoto::with('product')->get();
-        $products = Product::with('productPhotos')->get();
-        return view('welcome', compact('productPhotos','products'));
+        $products = Product::leftJoin(
+            'product_photos', 'product_photos.product_id', '=', 'products.id')
+            ->select(['product_photos.path_images','product_photos.created_at'])
+            ->get();
+        //$products = Product::with('productPhotos')->get();
+
+        return view('welcome', compact('products'));
     }
 
     /**
@@ -44,7 +48,7 @@ class ProductController extends Controller
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $file) {
                 // $name=$file->getClientOriginalName();
-                $filename = $file->store('photos','public');
+                $filename = $file->store('photos', 'public');
                 // $file->move('storage/photos',$name);
                 // $filename=time().'_'.$name;
                 // dd($filename);
